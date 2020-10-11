@@ -30,11 +30,12 @@ public class Tile : MonoBehaviour
 
     private MatchFinder _match;
 
-
+    private float tileMovementSpeed = 0.1f;
 
     private void Start() {
         _match = FindObjectOfType<MatchFinder>();
         _board = FindObjectOfType<BoardSetup>();
+        
     }
 
     private void OnMouseDown() {
@@ -75,7 +76,7 @@ public class Tile : MonoBehaviour
         if ((Mathf.Abs(targetX - transform.position.x)) > .1) {
             //Move towards target
             tempPos = new Vector2(targetX, transform.position.y);
-            transform.position = Vector2.Lerp(transform.position, tempPos, 0.6f);
+            transform.position = Vector2.Lerp(transform.position, tempPos, tileMovementSpeed);
             if (_board.tilePieces[column, row] != this.gameObject) {
                 _board.tilePieces[column, row] = this.gameObject;                
                 _match.FindAllMatches();
@@ -88,7 +89,7 @@ public class Tile : MonoBehaviour
         if ((Mathf.Abs(targetY - transform.position.y)) > .1) {
             //Move towards target
             tempPos = new Vector2(transform.position.x, targetY);
-            transform.position = Vector2.Lerp(transform.position, tempPos, 0.6f);
+            transform.position = Vector2.Lerp(transform.position, tempPos, tileMovementSpeed);
             if (_board.tilePieces[column, row] != this.gameObject) {
                 _board.tilePieces[column, row] = this.gameObject;
                 _match.FindAllMatches();
@@ -109,7 +110,9 @@ public class Tile : MonoBehaviour
             otherDot.GetComponent<Tile>().row += -1 * (int)direction.y;
             column += (int)direction.x;
             row += (int)direction.y;
+            //Debug.Log($"{column}, {row}, {otherDot.GetComponent<Tile>().column}, {otherDot.GetComponent<Tile>().row}");
             StartCoroutine(CheckMoveCo());
+            
         }
     }
 
@@ -131,7 +134,13 @@ public class Tile : MonoBehaviour
         }
     }
 
+    private void OnDestroy() {
+        //Debug.Log($"Destoryed {this.gameObject.name}");
+    }
+
+
     private IEnumerator CheckMoveCo() {
+        yield return new WaitForSeconds(0.3f);
         if (otherDot != null) {
             Tile dotTile = otherDot.GetComponent<Tile>();
             if (!isMatched && !dotTile.isMatched) {
@@ -139,7 +148,8 @@ public class Tile : MonoBehaviour
                 dotTile.column = column;
                 row = previousRow;
                 column = previousCol;
-                yield return new WaitForSeconds(0.5f);                
+                yield return null;
+                //Debug.Log("No matches");
                 //board.currentState = GameState.move;
             } else {/*
                 if (endGameMgr != null) {
@@ -147,6 +157,7 @@ public class Tile : MonoBehaviour
                         endGameMgr.DecreaseCounterValue();
                     }
                 }*/
+                //Debug.Log("Matches Found");
                 _board.DestroyMatches();
             }
 

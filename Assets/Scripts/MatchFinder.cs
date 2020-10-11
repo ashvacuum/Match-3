@@ -54,7 +54,6 @@ public class MatchFinder : MonoBehaviour
                             Tile upDot_C = upDot.GetComponent<Tile>();
                             Tile downDot_C = downDot.GetComponent<Tile>();
                             if (downDot.tag == _currentDot.tag && upDot.tag == _currentDot.tag) {
-
                                 GetNearbyPieces(upDot, _currentDot, downDot);
                             }
                         }

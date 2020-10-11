@@ -41,10 +41,9 @@ public class BoardSetup : MonoBehaviour {
 
     public static Board board;
 
+    public GameObject[,] boardContainers;
 
-    public GameObject[,] boardContainers { get; private set; }
-
-    public GameObject[,] tilePieces { get; private set; }
+    public GameObject[,] tilePieces;
     #endregion
 
     #region Private variables
@@ -71,7 +70,7 @@ public class BoardSetup : MonoBehaviour {
     public void SetupBoard() {
         board = new Board { height = height, width = width };
         boardContainers = new GameObject[width, height];
-        Camera.main.gameObject.GetComponent<CameraScaler>().RepositionCamera(width, height);
+        Camera.main.gameObject.GetComponent<CameraScaler>().RepositionCamera(height, width);
         tilePieces = new GameObject[width, height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -89,26 +88,30 @@ public class BoardSetup : MonoBehaviour {
                 Tile tile = tilePieces[i, j].GetComponent<Tile>();
                 tile.column = i;
                 tile.row = j;
+                tile.transform.parent = this.transform;
             }
         }
     }
 
     private int CalculateOffset(int tileXLocation) {
-        return tileXLocation > (width / 2) ? Mathf.Abs(offSet) : -Mathf.Abs(offSet);
+        return tileXLocation + 1 > (width / 2) ? Mathf.Abs(offSet) : -Mathf.Abs(offSet);
     }
 
     private GameObject GetRandomTile(int x, int y) {
         //int num = randomGenerator.Next(0, tilePieceCount);        
-        int num = _randomGenerator.Next(0, tilePieceCount);
+        int num = _randomGenerator.Next(0, tilePieceCount - 1);
         int maxIterations = 0;
         while (MatchesAt(x, y, tilePrefabs[num]) && maxIterations < 100) {
             //num = UnityEngine.Random.Range(0, tilePieceCount);
             num = _randomGenerator.Next(0, tilePieceCount);
-            Debug.Log("match found");
+            //Debug.Log("match found");
             maxIterations++;
         }
         maxIterations = 0;
-        return Instantiate(tilePrefabs[num], new Vector2(CalculateOffset(x), y), Quaternion.identity);
+        GameObject g = Instantiate(tilePrefabs[num], new Vector2(CalculateOffset(x), y), Quaternion.identity);
+        g.name = $"{x}, {y}";
+        //Debug.Log($"Created {g.name}");
+        return g;
     }
 
     public void DestroyMatches() {
@@ -126,7 +129,7 @@ public class BoardSetup : MonoBehaviour {
                 }
             }
         }
-        StartCoroutine(DecreaseRowCo2());
+        StartCoroutine(DecreaseColCo());
     }
 
     private bool MatchesAt(int _col, int _row, GameObject _piece) {
@@ -171,31 +174,66 @@ public class BoardSetup : MonoBehaviour {
             if (g != null)
                 Destroy(g);
         }
+        foreach(Transform t in this.transform) {
+            //Debug.Log($"{t.name} wasn't deleted");
+            Destroy(t.gameObject);
+        }
         items = null;
     }
 
     private void DestroyMatchesAt(int _col, int _row) {
-        if (tilePieces[_col, _row].GetComponent<Tile>().isMatched) {
-            tilePieces[_col, _row].SetActive(false);
+        if (tilePieces[_col, _row].GetComponent<Tile>().isMatched) {            
+            Destroy(tilePieces[_col, _row]);
+            //tilePieces[_col, _row].SetActive(false);
+            Debug.Log($"Removed {tilePieces[_col, _row].name} ");
             tilePieces[_col, _row] = null;
+            StartCoroutine(DecreaseColCo());
         }
     }
 
 
-    private IEnumerator DecreaseRowCo2() {
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                for (int k = j + 1; k < height; k++) {
-                    if (tilePieces[i, k] != null) {
-                        tilePieces[i, k].GetComponent<Tile>().row = j;
-                        tilePieces[i, k] = null;
-                        break;
+    private IEnumerator DecreaseColCo() {
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (tilePieces[i, j] != null && !tilePieces[i, j].Equals(null)) {
+                    if (CanTileMove(i, j)) {                        
+                        yield return null;
+                        MoveTile(i, j);
                     }
                 }
+
             }
         }
-        yield return new WaitForSeconds(refillDelay * 0.5f);
+
         StartCoroutine(FillBoardCo());
+    }
+
+    private bool CanTileMove(int col, int row) {
+        Debug.Log(tilePieces[MoveToNextAvailable(col), row] == null
+            ? $"{col},{row} moving to {MoveToNextAvailable(col)},{row} is empty"
+            : $"{col},{row} moving to {MoveToNextAvailable(col)},{row} is filled");
+        return tilePieces[MoveToNextAvailable(col), row] == null;
+    }
+
+    private void MoveTile(int col, int row) {
+        if (tilePieces[col, row] == null) return;
+        Tile tile = tilePieces[col, row].GetComponent<Tile>();
+        int newColumn = MoveToNextAvailable(tile.column);
+        Debug.Log($"{tile.name} moving to {MoveToNextAvailable(tile.column)}");
+        tile.column = newColumn;
+        tilePieces[col, row] = null;
+        tilePieces[newColumn, row] = tile.gameObject;
+    }
+
+    private int MoveToNextAvailable(int currentCol) {
+        if (currentCol + 1 < width / 2) {            
+            return currentCol + 1;
+        } else if (currentCol + 1 > (width * 0.5) && currentCol != width/2) {             
+            return currentCol - 1;
+        } else {
+            return currentCol;
+        }
     }
 
 
@@ -215,7 +253,7 @@ public class BoardSetup : MonoBehaviour {
 
     private IEnumerator FillBoardCo() {
         yield return new WaitForSeconds(refillDelay);
-        RefillBoard();
+        RefillBoard();        
         yield return new WaitForSeconds(refillDelay);
         while (MatchesOnBoard()) {
             //streakValue++;
@@ -247,20 +285,47 @@ public class BoardSetup : MonoBehaviour {
     private void RefillBoard() {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                Vector2 _tempPos = new Vector2(i, j);
+                //Vector2 _tempPos = new Vector2(i, j);
                 //TODO Change offset
                 //Vector2 _tempPos = new Vector2(i, j + offSet);
                 //GameObject _piece = objectReturn(dots[_dotToUse].tag);
-                GameObject _piece = GetRandomTile(i, j);
-                if (_piece != null) {
-                    tilePieces[i, j] = _piece;
-                    _piece.transform.position = _tempPos;
-                    _piece.SetActive(true);
-                    _piece.transform.parent = this.transform;
+                if (tilePieces[i, j] == null) {
+                    GameObject _piece = GetRandomTile(i, j);
+                    if (_piece != null) {
+                        tilePieces[i, j] = _piece;
+                        //_piece.transform.position = _tempPos;
+                        //_piece.SetActive(true);
+                        _piece.transform.parent = this.transform;
 
-                    _piece.GetComponent<Tile>().column = i;
-                    _piece.GetComponent<Tile>().row = j;
+                        _piece.GetComponent<Tile>().column = i;
+                        _piece.GetComponent<Tile>().row = j;
+                    }
                 }
+            }
+        }
+    }
+
+    private IEnumerator BoardRefill() {
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                //Vector2 _tempPos = new Vector2(i, j);
+                //TODO Change offset
+                //Vector2 _tempPos = new Vector2(i, j + offSet);
+                //GameObject _piece = objectReturn(dots[_dotToUse].tag);
+                if (tilePieces[i, j] == null) {
+                    GameObject _piece = GetRandomTile(i, j);
+                    if (_piece != null) {
+                        tilePieces[i, j] = _piece;
+                        //_piece.transform.position = _tempPos;
+                        //_piece.SetActive(true);
+                        _piece.transform.parent = this.transform;
+
+                        _piece.GetComponent<Tile>().column = i;
+                        _piece.GetComponent<Tile>().row = j;
+                    }
+                }
+                yield return new WaitForSeconds(0.2f);
             }
         }
     }

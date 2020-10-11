@@ -16,6 +16,7 @@ public class CameraScaler : MonoBehaviour
     // Use this for initialization
     void Start() {
         _board = FindObjectOfType<BoardSetup>();
+        cam = GetComponent<Camera>();
         screenHeight = Screen.height;
         screenWidth = Screen.width;
     }
@@ -26,15 +27,15 @@ public class CameraScaler : MonoBehaviour
     /// <param name="height">Board Height</param>
     /// <param name="width">Board Width</param>
     public void RepositionCamera(float height, float width) {
-        Vector3 _tempPos = new Vector3(height / 2, height / 2, cameraOffset);
+        Vector3 _tempPos = new Vector3((width-1) / 2, (height-1) / 2, cameraOffset);
         transform.position = _tempPos;
         //Camera.main.orthographicSize = (board.width >= board.height) ? (board.width / 2 + padding) / aspectRatio : board.height / 2 + padding;
 
         if (cam != null) {
             if (_board.width >= _board.height) {
-                cam.orthographicSize = _board.width + padding / 2;
+                cam.orthographicSize = height + padding / 2;
             } else {
-                cam.orthographicSize = _board.height / 2 + padding;
+                cam.orthographicSize = width / 2 +  (padding % 7);
             }
         }
 
