@@ -270,6 +270,60 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1203994792
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1203994794}
+  - component: {fileID: 1203994793}
+  m_Layer: 0
+  m_Name: Game
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1203994793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203994792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6365f51c7ebf41740992404318d3e16e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 4
+  height: 4
+  tilePieceCount: 3
+  tilePrefabs:
+  - {fileID: 9078531725089886327, guid: 306ce6add9b6ebb448413093f5026e39, type: 3}
+  - {fileID: 2268970785336174957, guid: 6e0ad4a09a0a401408c542c075c64019, type: 3}
+  - {fileID: 5098279423899031316, guid: 9a93da5f153b8aa49bf8e5dc55e8f647, type: 3}
+  - {fileID: 3608919504934455103, guid: 504c888eb32d58f4cb6d1218374c3bae, type: 3}
+  - {fileID: 6725241109187175779, guid: 1337baa9c218b5540bafe9cf6d578053, type: 3}
+  containerPrefab: {fileID: 5382491712136421458, guid: ad6bc6cda2a31094aa0a54b353e1c1d2,
+    type: 3}
+--- !u!4 &1203994794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203994792}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.11910415, y: -0.46243057, z: -0.8563631}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1219693801
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,8 +465,8 @@ Canvas:
   m_GameObject: {fileID: 1515558897}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
