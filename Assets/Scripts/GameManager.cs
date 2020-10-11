@@ -14,6 +14,10 @@ public class GameManager : MonoBehaviour
 
     private BoardSetup _setup;
 
+    private void Start() {
+        _setup = FindObjectOfType<BoardSetup>();
+    }
+
     public void StartGame() {
         string s_width;
         string s_height;
@@ -35,6 +39,7 @@ public class GameManager : MonoBehaviour
             _setup.tilePieceCount = 3;
         }
         panel.SetActive(false);
+        _setup.BeginGame();
     }
 
     public void RestartGame() {
