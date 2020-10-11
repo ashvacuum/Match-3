@@ -198,6 +198,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -213,6 +214,22 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
+--- !u!114 &519420030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5278db47100849b44b1dfc7c52b47789, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraOffset: -1
+  screenWidth: 0
+  screenHeight: 0
+  padding: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -280,6 +297,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1203994794}
   - component: {fileID: 1203994793}
+  - component: {fileID: 1203994795}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -302,6 +320,7 @@ MonoBehaviour:
   width: 4
   height: 4
   tilePieceCount: 3
+  refillDelay: 0.2
   tilePrefabs:
   - {fileID: 9078531725089886327, guid: 306ce6add9b6ebb448413093f5026e39, type: 3}
   - {fileID: 2268970785336174957, guid: 6e0ad4a09a0a401408c542c075c64019, type: 3}
@@ -318,12 +337,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1203994792}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.11910415, y: -0.46243057, z: -0.8563631}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1203994795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203994792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd7b888556fabf6479df62a8e2345c96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentMatches: []
 --- !u!1 &1219693801
 GameObject:
   m_ObjectHideFlags: 0

@@ -37,8 +37,34 @@ public class Tile : MonoBehaviour
         _board = FindObjectOfType<BoardSetup>();
     }
 
+    private void OnMouseDown() {
+        /*
+        if (board.currentState == GameState.move) {
+            
+        }*/
+        firstTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    private void OnMouseUp() {
+        finalTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        CalcAngle();
+    }
+
+
+    void CalcAngle() {
+        if (Mathf.Abs(finalTouchPos.y - firstTouchPos.y) > swipeResist || Mathf.Abs(finalTouchPos.x - firstTouchPos.x) > swipeResist) {
+            //board.currentState = GameState.wait;
+            swipeAngle = Mathf.Atan2(finalTouchPos.y - firstTouchPos.y, finalTouchPos.x - firstTouchPos.x) * 180 / Mathf.PI;
+            Moves();
+            //board.currentDot = this;
+        } else {
+            //board.currentState = GameState.move;
+        }
+
+    }
+
     private void Update() {
-        //TileMotion();
+        TileMotion();
     }
 
     private void TileMotion() {
@@ -51,13 +77,9 @@ public class Tile : MonoBehaviour
             tempPos = new Vector2(targetX, transform.position.y);
             transform.position = Vector2.Lerp(transform.position, tempPos, 0.6f);
             if (_board.tilePieces[column, row] != this.gameObject) {
-                _board.tilePieces[column, row] = this.gameObject;
-                //TODO FIX
-                //findMatches.FindAllMatches();
-
+                _board.tilePieces[column, row] = this.gameObject;                
+                _match.FindAllMatches();
             }
-
-
         } else {
             tempPos = new Vector2(targetX, transform.position.y);
             transform.position = tempPos;
@@ -69,9 +91,7 @@ public class Tile : MonoBehaviour
             transform.position = Vector2.Lerp(transform.position, tempPos, 0.6f);
             if (_board.tilePieces[column, row] != this.gameObject) {
                 _board.tilePieces[column, row] = this.gameObject;
-
-                //TODO FIX
-                //findMatches.FindAllMatches();
+                _match.FindAllMatches();
             }
 
         } else {
@@ -89,7 +109,7 @@ public class Tile : MonoBehaviour
             otherDot.GetComponent<Tile>().row += -1 * (int)direction.y;
             column += (int)direction.x;
             row += (int)direction.y;
-            //StartCoroutine(CheckMoveCo());
+            StartCoroutine(CheckMoveCo());
         }
     }
 
